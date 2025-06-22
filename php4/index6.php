@@ -82,6 +82,30 @@
 
     }
 }
+
+//niuwe studenten toevoegen
+if (isset($_POST['nieuwe_student'])) {
+    $student_name = $_POST['student_naam'];
+    $vak = $_POST['vak'];
+    $cijfer = $_POST['cijfers'];
+
+    if (!empty($student_name) && is_numeric($cijfer)) {
+        // Stap 1: Voeg student toe
+        $stmt = $conn->prepare("INSERT INTO users (name) VALUES (?)");
+        $stmt->execute([$student_name]);
+
+        // Stap 2: Haal het ID van de nieuwe student op
+        $user_id = $conn->lastInsertId();
+
+        // Stap 3: Voeg het cijfer toe
+        $stmt = $conn->prepare("INSERT INTO cijfers (user_id, vak, cijfer) VALUES (?, ?, ?)");
+        $stmt->execute([$user_id, $vak, $cijfer]);
+
+        echo "<p style='color:green;'>Nieuwe student '$student_name' toegevoegd met cijfer $cijfer voor $vak.</p>";
+    } else {
+        echo "<p style='color:red;'>Vul alle velden correct in. Cijfer moet een getal zijn.</p>";
+    }
+}
     
     ?>
     <table border = '1' >
@@ -111,6 +135,23 @@
     <button type="submit" name="toevoegen">Toevoegen</button>
     <button type="submit" name="delete">verwijderen</button>
     <button type="submit" name="update">Update</button>
+
+
+<br>
+    <h2>Nieuwe student toevoegen met eerste cijfer</h2>
+<form method="post">
+    <label>Student naam:</label>
+    <input type="text" name="student_naam" required><br>
+
+    <label>Vak:</label>
+    <input type="text" name="vak" required><br>
+
+    <label>Cijfer:</label>
+    <input type="number" step="0.01" name="cijfers" required><br>
+
+    <button type="submit" name="nieuwe_student">Toevoegen</button>
+</form>
+
 
 
 
